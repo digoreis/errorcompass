@@ -8,12 +8,22 @@ import pt.iscte.errorcompass.support.getPair
 import pt.iscte.errorcompass.model.RuleType
 import pt.iscte.errorcompass.support.getName
 
+/**
+ * MethodReturnChecker is a visitor class that extends VoidVisitorAdapter to check if all non-void methods in a class
+ * have a guaranteed return statement. It stores the identified issues in a list.
+ */
 class MethodReturnChecker : VoidVisitorAdapter<Void>() {
     var issues: List<RuleType> = emptyList()
         private set(value) {
             field = value
         }
-
+    /**
+     * Visits MethodDeclaration nodes in the AST, checks if the method has a guaranteed return statement if it is not void,
+     * and records any issues found.
+     *
+     * @param md the method declaration node to visit
+     * @param arg additional argument (not used)
+     */
     override fun visit(md: MethodDeclaration, arg: Void?) {
         super.visit(md, arg)
         val returnType = md.type.asString()
@@ -31,7 +41,14 @@ class MethodReturnChecker : VoidVisitorAdapter<Void>() {
             this.issues += RuleType.MethodReturnType(md.nameAsString, begin)
         }
     }
-
+    /**
+     * Checks if the provided list of statements contains a guaranteed return statement.
+     *
+     * @param statements the list of statements to check
+     * @param expectedType the expected return type of the method
+     * @param methodName the name of the method being checked
+     * @return true if there is a guaranteed return statement, false otherwise
+     */
     private fun checkStatements(statements: NodeList<Statement>, expectedType: String, methodName: String): Boolean {
         for (stmt in statements) {
             if (stmt is ReturnStmt) {
@@ -66,6 +83,14 @@ class MethodReturnChecker : VoidVisitorAdapter<Void>() {
         return false
     }
 
+    /**
+     * Checks if a single statement or a block of statements contains a guaranteed return statement.
+     *
+     * @param stmt the statement or block of statements to check
+     * @param expectedType the expected return type of the method
+     * @param methodName the name of the method being checked
+     * @return true if there is a guaranteed return statement, false otherwise
+     */
     private fun checkForGuaranteedReturn(stmt: Statement?, expectedType: String, methodName: String): Boolean {
         if (stmt is BlockStmt) {
             return checkStatements(stmt.statements, expectedType, methodName)

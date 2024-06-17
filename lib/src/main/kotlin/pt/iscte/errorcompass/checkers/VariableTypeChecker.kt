@@ -12,12 +12,26 @@ import pt.iscte.errorcompass.model.RuleType
 import pt.iscte.errorcompass.support.getName
 import pt.iscte.errorcompass.support.getPair
 
+/**
+ * VariableTypeChecker is a visitor class that extends VoidVisitorAdapter to analyze and detect
+ * type mismatches in variable declarations, method calls, and constructor parameters in Java source code
+ * using JavaParser. It captures and reports issues where variables are initialized with incompatible types.
+ *
+ * @property cu The CompilationUnit representing the parsed Java source file.
+ */
 class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() {
     var issues: List<RuleType> = emptyList()
         private set(value) {
             field = value
         }
 
+    /**
+     * Visits VariableDeclarator nodes in the AST to check for type mismatches between declared type
+     * and initializer type. Records issues for any detected mismatches.
+     *
+     * @param n The VariableDeclarator node to visit
+     * @param arg Additional argument (not used)
+     */
     override fun visit(n: VariableDeclarator?, arg: Void?) {
         super.visit(n, arg)
         n?.let {
@@ -36,6 +50,13 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
         }
     }
 
+    /**
+     * Visits MethodCallExpr nodes in the AST to check for type mismatches between method parameter types
+     * and argument types. Records issues for any detected mismatches.
+     *
+     * @param n The MethodCallExpr node to visit
+     * @param arg Additional argument (not used)
+     */
     override fun visit(n: MethodCallExpr?, arg: Void?) {
         super.visit(n, arg)
         n?.let {
@@ -55,6 +76,13 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
         }
     }
 
+    /**
+     * Visits ClassOrInterfaceDeclaration nodes in the AST to check for type mismatches between
+     * constructor parameter types and initializer types. Records issues for any detected mismatches.
+     *
+     * @param n The ClassOrInterfaceDeclaration node to visit
+     * @param arg Additional argument (not used)
+     */
     override fun visit(n: ClassOrInterfaceDeclaration?, arg: Void?) {
         super.visit(n, arg)
         n?.let {
@@ -73,10 +101,22 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
         }
     }
 
+    /**
+     * Determines the type of initializer parameter.
+     *
+     * @param initializer The Parameter to determine the type for
+     * @return The type of the initializer as a String
+     */
     private fun getInitializerType(initializer: Parameter): String {
         return initializer.typeAsString
     }
 
+    /**
+     * Determines the type of initializer expression.
+     *
+     * @param initializer The Expression to determine the type for
+     * @return The type of the initializer as a String
+     */
     private fun getInitializerType(initializer: Expression): String {
         val types = cu.types.map { it.nameAsString.lowercase() }
         return when (initializer) {
@@ -96,6 +136,12 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
         }
     }
 
+    /**
+     * Retrieves the name of a ResolvedType.
+     *
+     * @param type The ResolvedType to retrieve the name for
+     * @return The name of the ResolvedType as a String
+     */
     private fun getName(type: ResolvedType): String {
         val types = cu.types.map { it.nameAsString.lowercase() }
         return if(type.isReferenceType) {
@@ -109,6 +155,13 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
         }
     }
 
+    /**
+     * Finds and retrieves a MethodDeclaration by its name.
+     *
+     * @param cu The CompilationUnit to search within
+     * @param methodName The name of the method to find
+     * @return The MethodDeclaration found, or null if not found
+     */
     private fun findMethodDeclaration(cu: CompilationUnit, methodName: String): MethodDeclaration? {
         val methodDeclarationVisitor = object : VoidVisitorAdapter<Void>() {
             var methodDeclaration: MethodDeclaration? = null

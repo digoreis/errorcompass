@@ -16,10 +16,16 @@ import pt.iscte.errorcompass.model.ResultAnalyzer
 import java.io.File
 import java.nio.file.Paths
 
-
+/**
+ * ErrorCompass class provides methods to analyze Java code for potential errors.
+ * It utilizes various checkers to inspect code quality and identify issues.
+ */
 class ErrorCompass() {
-    /***
-     * Run the evaluate process in a string with JavaCode
+    /**
+     * Runs the evaluation process on a string containing Java code.
+     *
+     * @param code The Java code as a string to be analyzed.
+     * @return Result<ResultAnalyzer> containing the analysis result.
      */
     fun run(code: String): Result<ResultAnalyzer> {
         val typeSolver = CombinedTypeSolver()
@@ -48,11 +54,14 @@ class ErrorCompass() {
         return Result.success(ResultAnalyzer(errors))
     }
 
-    /***
-     * Run the evaluate process in a file or directory
+    /**
+     * Runs the evaluation process on a file containing Java code.
+     *
+     * @param file The File object representing the file to be analyzed.
+     * @return Result<ResultAnalyzer> containing the analysis result.
      */
     fun run(file: File): Result<ResultAnalyzer> {
-        return Result.success(ResultAnalyzer(emptyList()))
+        return run(file.readText())
     }
 }
 

@@ -7,12 +7,23 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import pt.iscte.errorcompass.model.RuleType
 import pt.iscte.errorcompass.support.getPair
 
+/**
+ * StringComparisonChecker is a visitor class that extends VoidVisitorAdapter to check for invalid string comparisons
+ * using the '==' operator against string literals. It stores identified issues in a list.
+ */
 class StringComparisonChecker : VoidVisitorAdapter<Void>() {
     var issues: List<RuleType> = emptyList()
         private set(value) {
             field = value
         }
 
+    /**
+     * Visits BinaryExpr nodes in the AST, checks for invalid string comparisons with string literals using '==',
+     * and records any issues found.
+     *
+     * @param be the binary expression node to visit
+     * @param arg additional argument (not used)
+     */
     override fun visit(be: BinaryExpr, arg: Void?) {
         super.visit(be, arg)
 
@@ -25,6 +36,12 @@ class StringComparisonChecker : VoidVisitorAdapter<Void>() {
         }
     }
 
+    /**
+     * Checks if the binary expression is a string comparison with a literal.
+     *
+     * @param be the binary expression to check
+     * @return true if it is a string comparison with a literal, false otherwise
+     */
     private fun isStringComparisonWithLiteral(be: BinaryExpr): Boolean {
         val left: Expression = be.left
         val right: Expression = be.right
@@ -41,6 +58,12 @@ class StringComparisonChecker : VoidVisitorAdapter<Void>() {
         return false
     }
 
+    /**
+     * Checks if the expression is a string variable.
+     *
+     * @param expr the expression to check
+     * @return true if the expression is a string variable, false otherwise
+     */
     private fun isStringVariable(expr: Expression): Boolean {
         return try {
             expr.calculateResolvedType().describe().equals("java.lang.String")

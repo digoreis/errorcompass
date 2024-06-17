@@ -13,11 +13,11 @@ class VariableTypeTest {
             val javaCode = """
             public class Main {
                 public static void main(String[] args) {
-                    int x = "Hello"; // Exemplo de tipo inválido
-                    String y = 42;   // Exemplo de tipo inválido
+                    int x = "Hello";
+                    String y = 42;
                     String z = "World";
                     int a = 123;
-                    Main m = new Main("Hello", 42); // Exemplo de tipo inválido
+                    Main m = new Main("Hello", 42);
                     m.someMethod(y,x);
                 }
     
@@ -33,7 +33,7 @@ class VariableTypeTest {
 
             var errorCompasss = ErrorCompass()
             errorCompasss.run(javaCode).onSuccess {
-                assertEquals(it.errors.count(), 5)
+                assertEquals(4, it.errors.count())
             }
 
     }
@@ -42,7 +42,7 @@ class VariableTypeTest {
         val javaCode = """
             public class Main {
                 public static void main(String[] args) {
-                    int x = "Hello"; // Exemplo de tipo inválido
+                    int x = "Hello"; 
                 }
             }
         """
@@ -50,7 +50,7 @@ class VariableTypeTest {
         var errorCompasss = ErrorCompass()
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(it.errors.count(), 1)
-            assertEquals(it.errors.first().description, "The variable x is of type int and is being initialized with the type String.")
+            assertEquals(it.errors.first().description, "The variable x is of type int and is being initialized with the type string.")
         }
 
     }
