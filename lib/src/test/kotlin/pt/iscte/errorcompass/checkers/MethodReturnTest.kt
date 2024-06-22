@@ -1,6 +1,7 @@
 package pt.iscte.errorcompass.checkers
 
 import pt.iscte.errorcompass.ErrorCompass
+import pt.iscte.errorcompass.model.Location
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -18,6 +19,7 @@ class MethodReturnTest {
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(1, it.errors.count())
             assertEquals("rtnTyp", it.errors.first().errorCode)
+            assertEquals(Location(3, 10), it.errors.first().errorLocation)
         }
 
     }
@@ -35,6 +37,7 @@ class MethodReturnTest {
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(1, it.errors.count())
             assertEquals("noRtnSem", it.errors.first().errorCode)
+            assertEquals(Location(2, 5), it.errors.first().errorLocation)
         }
 
     }
@@ -57,6 +60,7 @@ class MethodReturnTest {
             print(it.errors)
             assertEquals(1, it.errors.count())
             assertEquals("noRtnSem", it.errors.first().errorCode)
+            assertEquals(Location(2, 5), it.errors.first().errorLocation)
         }
 
     }

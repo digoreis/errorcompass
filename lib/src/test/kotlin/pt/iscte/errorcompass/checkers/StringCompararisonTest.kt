@@ -1,6 +1,7 @@
 package pt.iscte.errorcompass.checkers
 
 import pt.iscte.errorcompass.ErrorCompass
+import pt.iscte.errorcompass.model.Location
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -22,6 +23,7 @@ class StringCompararisonTest {
             println(it.errors)
             assertEquals(it.errors.count(), 1)
             assertEquals(it.errors.first().errorCode, "strCmp")
+            assertEquals(Location(4, 12), it.errors.first().errorLocation)
         }
 
     }

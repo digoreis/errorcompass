@@ -1,6 +1,7 @@
 package pt.iscte.errorcompass.checkers
 
 import pt.iscte.errorcompass.ErrorCompass
+import pt.iscte.errorcompass.model.Location
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -20,6 +21,7 @@ class UninitializedVariableTest {
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(1, it.errors.count())
             assertEquals(it.errors.first().errorCode, "uniVar")
+            assertEquals(Location(5, 28), it.errors.first().errorLocation)
         }
     }
 }

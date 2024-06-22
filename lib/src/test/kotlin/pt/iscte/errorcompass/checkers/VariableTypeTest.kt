@@ -4,6 +4,7 @@
 package pt.iscte.errorcompass.checkers
 
 import pt.iscte.errorcompass.ErrorCompass
+import pt.iscte.errorcompass.model.Location
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -50,6 +51,7 @@ class VariableTypeTest {
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(it.errors.count(), 1)
             assertEquals("valTyp", it.errors.first().errorCode)
+            assertEquals(Location(3, 13), it.errors.first().errorLocation)
         }
 
     }
@@ -74,6 +76,7 @@ class VariableTypeTest {
         result.onSuccess {
             assertEquals(1, it.errors.count())
             assertEquals("calTyp", it.errors.first().errorCode)
+            assertEquals(Location(3, 9), it.errors.first().errorLocation)
         }
     }
 
