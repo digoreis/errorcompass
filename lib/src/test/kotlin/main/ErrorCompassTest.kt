@@ -21,8 +21,8 @@ class ErrorCompassTest {
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(1, it.errors.count())
             assertEquals(
-                "In the control structure if statement, a ; is present instead of a {. After the condition, the start of a code block is expected.",
-                it.errors.first().description
+                "crtStr",
+                it.errors.first().errorCode
             )
         }
 

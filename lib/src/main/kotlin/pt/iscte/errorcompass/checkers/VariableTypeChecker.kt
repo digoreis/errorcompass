@@ -32,19 +32,17 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
      * @param n The VariableDeclarator node to visit
      * @param arg Additional argument (not used)
      */
-    override fun visit(n: VariableDeclarator?, arg: Void?) {
+    override fun visit(n: VariableDeclarator, arg: Void?) {
         super.visit(n, arg)
-        n?.let {
-            val variableType = it.typeAsString
-            val variableName = it.nameAsString
-            val initializer = it.initializer
-            if (initializer.isPresent) {
-                val initializerExpr = initializer.get()
-                val initializerType = getInitializerType(initializerExpr)
-                if (variableType.lowercase() != initializerType) {
-                    val location = n.begin.getLocation()
-                    this.issues += RuleType.VariableType(variableName, variableType, initializerType, location)
-                }
+        val variableType = n.typeAsString
+        val variableName = n.nameAsString
+        val initializer = n.initializer
+        if (initializer.isPresent) {
+            val initializerExpr = initializer.get()
+            val initializerType = getInitializerType(initializerExpr)
+            if (variableType.lowercase() != initializerType) {
+                val location = n.begin.getLocation()
+                this.issues += RuleType.VariableType(variableName, variableType, initializerType, location)
             }
         }
     }
@@ -56,21 +54,19 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
      * @param n The MethodCallExpr node to visit
      * @param arg Additional argument (not used)
      */
-    override fun visit(n: MethodCallExpr?, arg: Void?) {
+    override fun visit(n: MethodCallExpr, arg: Void?) {
         super.visit(n, arg)
-        n?.let {
-            val methodName = it.nameAsString
-            val methodDeclaration = findMethodDeclaration(cu, methodName)
+        val methodName = n.nameAsString
+        val methodDeclaration = findMethodDeclaration(cu, methodName)
 
-            val methodDeclaredParams = methodDeclaration?.parameters?.toList()
-            val parameters = it.arguments.toList()
+        val methodDeclaredParams = methodDeclaration?.parameters?.toList()
+        val parameters = n.arguments.toList()
 
-            methodDeclaredParams?.zip(parameters)?.forEach { (methodParameter, param) ->
-                val calculateType = getName(param.calculateResolvedType())
-                if(methodParameter.typeAsString.lowercase() != calculateType){
-                    val location = n.begin.getLocation()
-                    this.issues += RuleType.CallArgumentsType(methodParameter.nameAsString , methodName, calculateType, location)
-                }
+        methodDeclaredParams?.zip(parameters)?.forEach { (methodParameter, param) ->
+            val calculateType = getName(param.calculateResolvedType())
+            if(methodParameter.typeAsString.lowercase() != calculateType){
+                val location = n.begin.getLocation()
+                this.issues += RuleType.CallArgumentsType(methodParameter.nameAsString , methodName, calculateType, location)
             }
         }
     }
@@ -82,18 +78,16 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
      * @param n The ClassOrInterfaceDeclaration node to visit
      * @param arg Additional argument (not used)
      */
-    override fun visit(n: ClassOrInterfaceDeclaration?, arg: Void?) {
+    override fun visit(n: ClassOrInterfaceDeclaration, arg: Void?) {
         super.visit(n, arg)
-        n?.let {
-            it.constructors.forEach { constructor ->
-                constructor.parameters.forEach { param ->
-                    val paramType = param.typeAsString
-                    val paramName = param.nameAsString
-                    val initializerType = getInitializerType(param)
-                    if (paramType != initializerType) {
-                        val location = n.begin.getLocation()
-                        this.issues += RuleType.ConstructorArgumentsType(it.nameAsString, paramName, initializerType, location)
-                    }
+        n.constructors.forEach { constructor ->
+            constructor.parameters.forEach { param ->
+                val paramType = param.typeAsString
+                val paramName = param.nameAsString
+                val initializerType = getInitializerType(param)
+                if (paramType != initializerType) {
+                    val location = n.begin.getLocation()
+                    this.issues += RuleType.ConstructorArgumentsType(n.nameAsString, paramName, initializerType, location)
                 }
             }
         }
