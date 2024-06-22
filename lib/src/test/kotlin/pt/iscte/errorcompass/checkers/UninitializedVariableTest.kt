@@ -1,5 +1,6 @@
-package pt.iscte.errorcompass
+package pt.iscte.errorcompass.checkers
 
+import pt.iscte.errorcompass.ErrorCompass
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
