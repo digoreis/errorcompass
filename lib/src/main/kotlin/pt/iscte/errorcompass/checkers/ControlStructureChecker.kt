@@ -3,6 +3,7 @@ package pt.iscte.errorcompass.checkers
 import com.github.javaparser.ast.stmt.*
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import pt.iscte.errorcompass.model.RuleType
+import pt.iscte.errorcompass.model.StmtType
 import pt.iscte.errorcompass.support.getLocation
 
 /**
@@ -23,13 +24,9 @@ class ControlStructureChecker : VoidVisitorAdapter<Void>() {
      */
     override fun visit(ifStmt: IfStmt, arg: Void?) {
         super.visit(ifStmt, arg)
-        checkMisplacedSemicolon(ifStmt, "if statement")
-        ifStmt.thenStmt.accept(this, arg)
-        ifStmt.elseStmt.ifPresent { stmt: Statement ->
-            stmt.accept(
-                this,
-                arg
-            )
+        if(ifStmt.thenStmt is EmptyStmt){
+            val begin = ifStmt.begin.getLocation()
+            issues += RuleType.ControlStructureType(StmtType.IF, begin)
         }
     }
 
@@ -41,7 +38,10 @@ class ControlStructureChecker : VoidVisitorAdapter<Void>() {
      */
     override fun visit(forStmt: ForStmt, arg: Void?) {
         super.visit(forStmt, arg)
-        checkMisplacedSemicolon(forStmt, "for statement")
+        if(forStmt.body is EmptyStmt) {
+            val begin = forStmt.begin.getLocation()
+            issues += RuleType.ControlStructureType(StmtType.FOR, begin)
+        }
         forStmt.body.accept(this, arg)
     }
 
@@ -53,22 +53,10 @@ class ControlStructureChecker : VoidVisitorAdapter<Void>() {
      */
     override fun visit(whileStmt: WhileStmt, arg: Void?) {
         super.visit(whileStmt, arg)
-        checkMisplacedSemicolon(whileStmt, "while statement")
-        whileStmt.body.accept(this, arg)
-    }
-
-    /**
-     * Checks if a control structure statement contains a misplaced semicolon.
-     * If a misplaced semicolon is found, it records the issue with the statement type and position.
-     *
-     * @param stmt the statement to check
-     * @param stmtType the type of the statement (if, for, while)
-     */
-    private fun checkMisplacedSemicolon(stmt: Statement, stmtType: String) {
-        val regex = """\b(if|while|for|switch|do)\s*\(?.*?\)?\s*;""".toRegex()
-        if (stmt.toString().matches(regex)) {
-            val begin = stmt.begin.getLocation()
-            issues += RuleType.ControlStructureType(stmtType, begin)
+        if(whileStmt.body is EmptyStmt) {
+            val begin = whileStmt.begin.getLocation()
+            issues += RuleType.ControlStructureType(StmtType.WHILE, begin)
         }
+        whileStmt.body.accept(this, arg)
     }
 }

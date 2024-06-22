@@ -2,7 +2,7 @@ package pt.iscte.errorcompass.model
 
 sealed class RuleType(val key: String, val location: Location) {
 
-    class ControlStructureType(val stmtType: String, loc: Location): RuleType("crtStr", loc) {
+    class ControlStructureType(val stmtType: StmtType, loc: Location): RuleType("crtStr", loc) {
 
     }
 
@@ -27,4 +27,10 @@ sealed class RuleType(val key: String, val location: Location) {
     class ReturnType(val methodName: String, val source: String, val target: String, loc: Location): RuleType("rtnTyp", loc) {
 
     }
+}
+
+enum class StmtType {
+    IF,
+    FOR,
+    WHILE
 }
