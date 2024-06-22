@@ -17,7 +17,7 @@ class MethodReturnTest {
         var errorCompasss = ErrorCompass()
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(1, it.errors.count())
-            assertEquals("In the method foo, a value of type int is being returned, but a value of type String was expected.", it.errors.first().description)
+            assertEquals("rtnTyp", it.errors.first().errorCode)
         }
 
     }
@@ -34,7 +34,7 @@ class MethodReturnTest {
         var errorCompasss = ErrorCompass()
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(1, it.errors.count())
-            assertEquals("In the method foo, a return value is expected, but no value is returned.", it.errors.first().description)
+            assertEquals("noRtnSem", it.errors.first().errorCode)
         }
 
     }
@@ -56,7 +56,7 @@ class MethodReturnTest {
         errorCompasss.run(javaCode).onSuccess {
             print(it.errors)
             assertEquals(1, it.errors.count())
-            assertEquals("In the method foo, a return value is expected, but no value is returned.", it.errors.first().description)
+            assertEquals("noRtnSem", it.errors.first().errorCode)
         }
 
     }

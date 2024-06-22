@@ -4,8 +4,8 @@ import com.github.javaparser.ast.NodeList
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.stmt.*
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
-import pt.iscte.errorcompass.support.getPair
 import pt.iscte.errorcompass.model.RuleType
+import pt.iscte.errorcompass.support.getLocation
 import pt.iscte.errorcompass.support.getName
 
 /**
@@ -37,8 +37,8 @@ class MethodReturnChecker : VoidVisitorAdapter<Void>() {
 
         val hasGuaranteedReturn: Boolean = checkForGuaranteedReturn(md.body.get(), returnType, md.nameAsString)
         if (!hasGuaranteedReturn) {
-            val begin = md.begin.getPair()
-            this.issues += RuleType.MethodReturnType(md.nameAsString, begin)
+            val location = md.begin.getLocation()
+            this.issues += RuleType.MethodReturnType(md.nameAsString, location)
         }
     }
     /**
@@ -55,8 +55,8 @@ class MethodReturnChecker : VoidVisitorAdapter<Void>() {
                 if (stmt.expression.isPresent) {
                     val returnType = stmt.expression.get().calculateResolvedType().getName().split(".").last().lowercase()
                     if (returnType != expectedType.lowercase()) {
-                        val begin = stmt.begin.getPair()
-                        this.issues += RuleType.ReturnType(methodName, returnType, expectedType, begin)
+                        val location = stmt.begin.getLocation()
+                        this.issues += RuleType.ReturnType(methodName, returnType, expectedType, location)
                     }
                 }
                 return true
@@ -98,9 +98,9 @@ class MethodReturnChecker : VoidVisitorAdapter<Void>() {
             if (stmt.expression.isPresent) {
                 val returnType = stmt.expression.get().calculateResolvedType().getName()
                 if (returnType != expectedType) {
-                    val begin = stmt.begin.getPair()
+                    val location = stmt.begin.getLocation()
 
-                    this.issues += RuleType.ReturnType(methodName, returnType, expectedType, begin)
+                    this.issues += RuleType.ReturnType(methodName, returnType, expectedType, location)
                 }
             }
             return true

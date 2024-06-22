@@ -5,7 +5,7 @@ import com.github.javaparser.ast.expr.Expression
 import com.github.javaparser.ast.expr.StringLiteralExpr
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import pt.iscte.errorcompass.model.RuleType
-import pt.iscte.errorcompass.support.getPair
+import pt.iscte.errorcompass.support.getLocation
 
 /**
  * StringComparisonChecker is a visitor class that extends VoidVisitorAdapter to check for invalid string comparisons
@@ -29,9 +29,8 @@ class StringComparisonChecker : VoidVisitorAdapter<Void>() {
 
         if (be.operator == BinaryExpr.Operator.EQUALS) {
             if (isStringComparisonWithLiteral(be)) {
-                val begin = be.begin.getPair()
-                val end = be.end.getPair()
-                issues += RuleType.StringComparisonType(begin)
+                val location = be.begin.getLocation()
+                issues += RuleType.StringComparisonType(location)
             }
         }
     }

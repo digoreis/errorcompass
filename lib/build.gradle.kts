@@ -29,6 +29,7 @@ dependencies {
 
     // Use the JUnit 5 integration.
     testImplementation(libs.junit.jupiter.engine)
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.1.0")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation("com.github.javaparser:javaparser-symbol-solver-core:3.25.10")

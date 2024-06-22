@@ -19,7 +19,7 @@ class UninitializedVariableTest {
         var errorCompasss = ErrorCompass()
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(1, it.errors.count())
-            assertEquals(it.errors.first().description, "The variable s of type java.lang.string is declared but never used.")
+            assertEquals(it.errors.first().errorCode, "uniVar")
         }
     }
 }

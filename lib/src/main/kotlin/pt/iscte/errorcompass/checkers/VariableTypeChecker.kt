@@ -9,8 +9,8 @@ import com.github.javaparser.ast.expr.*
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import com.github.javaparser.resolution.types.ResolvedType
 import pt.iscte.errorcompass.model.RuleType
+import pt.iscte.errorcompass.support.getLocation
 import pt.iscte.errorcompass.support.getName
-import pt.iscte.errorcompass.support.getPair
 
 /**
  * VariableTypeChecker is a visitor class that extends VoidVisitorAdapter to analyze and detect
@@ -42,9 +42,8 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
                 val initializerExpr = initializer.get()
                 val initializerType = getInitializerType(initializerExpr)
                 if (variableType.lowercase() != initializerType) {
-                    val begin = n.begin.getPair()
-                    val end = n.end.getPair()
-                    this.issues += RuleType.VariableType(variableName, variableType, initializerType, begin)
+                    val location = n.begin.getLocation()
+                    this.issues += RuleType.VariableType(variableName, variableType, initializerType, location)
                 }
             }
         }
@@ -69,8 +68,8 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
             methodDeclaredParams?.zip(parameters)?.forEach { (methodParameter, param) ->
                 val calculateType = getName(param.calculateResolvedType())
                 if(methodParameter.typeAsString.lowercase() != calculateType){
-                    val begin = n.begin.getPair()
-                    this.issues += RuleType.CallArgumentsType(methodParameter.nameAsString , methodName, calculateType, begin)
+                    val location = n.begin.getLocation()
+                    this.issues += RuleType.CallArgumentsType(methodParameter.nameAsString , methodName, calculateType, location)
                 }
             }
         }
@@ -92,9 +91,8 @@ class VariableTypeChecker(val cu: CompilationUnit) : VoidVisitorAdapter<Void>() 
                     val paramName = param.nameAsString
                     val initializerType = getInitializerType(param)
                     if (paramType != initializerType) {
-                        val begin = n.begin.getPair()
-                        val end = n.end.getPair()
-                        this.issues += RuleType.ConstructorArgumentsType(it.nameAsString, paramName, initializerType, begin)
+                        val location = n.begin.getLocation()
+                        this.issues += RuleType.ConstructorArgumentsType(it.nameAsString, paramName, initializerType, location)
                     }
                 }
             }

@@ -5,8 +5,8 @@ import com.github.javaparser.ast.expr.AssignExpr
 import com.github.javaparser.ast.expr.NameExpr
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import pt.iscte.errorcompass.model.RuleType
+import pt.iscte.errorcompass.support.getLocation
 import pt.iscte.errorcompass.support.getName
-import pt.iscte.errorcompass.support.getPair
 
 /**
  * UninitializedVariableChecker is a visitor class that extends VoidVisitorAdapter to detect uninitialized variables
@@ -58,8 +58,8 @@ class UninitializedVariableChecker : VoidVisitorAdapter<Void>() {
         val variableType = ne.calculateResolvedType().getName()
 
         if (uninitializedVariables.contains(variableName)) {
-            val begin = ne.begin.getPair()
-            issues += RuleType.UninitializedVariableType(variableName, variableType, begin)
+            val location = ne.begin.getLocation()
+            issues += RuleType.UninitializedVariableType(variableName, variableType, location)
         }
     }
 }

@@ -3,7 +3,7 @@ package pt.iscte.errorcompass.checkers
 import com.github.javaparser.ast.stmt.*
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import pt.iscte.errorcompass.model.RuleType
-import pt.iscte.errorcompass.support.getPair
+import pt.iscte.errorcompass.support.getLocation
 
 /**
  * ControlStructureChecker is a visitor class that extends VoidVisitorAdapter to check for misplaced semicolons
@@ -67,8 +67,7 @@ class ControlStructureChecker : VoidVisitorAdapter<Void>() {
     private fun checkMisplacedSemicolon(stmt: Statement, stmtType: String) {
         val regex = """\b(if|while|for|switch|do)\s*\(?.*?\)?\s*;""".toRegex()
         if (stmt.toString().matches(regex)) {
-            val begin = stmt.begin.getPair()
-            val end = stmt.end.getPair()
+            val begin = stmt.begin.getLocation()
             issues += RuleType.ControlStructureType(stmtType, begin)
         }
     }

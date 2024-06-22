@@ -21,7 +21,7 @@ class StringCompararisonTest {
         errorCompasss.run(javaCode).onSuccess {
             println(it.errors)
             assertEquals(it.errors.count(), 1)
-            assertEquals(it.errors.first().description, "Potential string comparison with ==  detected")
+            assertEquals(it.errors.first().errorCode, "strCmp")
         }
 
     }

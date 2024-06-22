@@ -49,7 +49,7 @@ class VariableTypeTest {
         var errorCompasss = ErrorCompass()
         errorCompasss.run(javaCode).onSuccess {
             assertEquals(it.errors.count(), 1)
-            assertEquals(it.errors.first().description, "The variable x is of type int and is being initialized with the type string.")
+            assertEquals("valTyp", it.errors.first().errorCode)
         }
 
     }
@@ -73,7 +73,7 @@ class VariableTypeTest {
         assertEquals(true, result.isSuccess)
         result.onSuccess {
             assertEquals(1, it.errors.count())
-            assertEquals("The parameter param1 of the method someMethod is receiving an invalid type: string", it.errors.first().description)
+            assertEquals("calTyp", it.errors.first().errorCode)
         }
     }
 
@@ -94,4 +94,6 @@ class VariableTypeTest {
             assertEquals(0, it.errors.count())
         }
     }
+
+    //TODO: Include more one test case to constructor
 }
