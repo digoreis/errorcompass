@@ -1,4 +1,4 @@
-package pt.iscte.errorcompass
+package pt.iscte.errorcompass.support
 
 import java.io.ByteArrayOutputStream
 import java.io.File

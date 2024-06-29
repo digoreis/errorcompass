@@ -1,8 +1,10 @@
 package pt.iscte.errorcompass.generates
 
 import pt.iscte.errorcompass.model.ErrorDescription
+import pt.iscte.errorcompass.model.Location
 import pt.iscte.errorcompass.model.RuleType
 import java.util.*
+import javax.tools.Diagnostic
 
 class ErrorGenerator {
 
@@ -16,6 +18,14 @@ class ErrorGenerator {
             is RuleType.ConstructorArgumentsType -> ErrorDescription(rule.key, rule.location, message("en", rule.key, rule.paramName, rule.objectName, rule.initializerValue), emptyList())
             is RuleType.ReturnType -> ErrorDescription(rule.key, rule.location, message("en", rule.key, rule.methodName, rule.source, rule.target), emptyList())
             is RuleType.MethodReturnType -> ErrorDescription(rule.key, rule.location, message("en", rule.key, rule.methodName), emptyList())
+        }
+    }
+
+    fun generate(error: Diagnostic<*>): ErrorDescription? {
+        val locale = Locale("en")
+        return when (error.kind) {
+            Diagnostic.Kind.ERROR -> ErrorDescription("javCmp", Location(error.lineNumber, error.columnNumber), error.getMessage(locale), emptyList())
+            else -> { null }
         }
     }
 

@@ -6,4 +6,4 @@ data class ErrorDescription(val errorCode: String, val errorLocation: Location, 
 
 data class Suggestion(val location: Location, val description: String)
 
-data class Location(val line: Int, val position: Int)
+data class Location(val line: Long, val position: Long)

@@ -5,5 +5,5 @@ import pt.iscte.errorcompass.model.Location
 import java.util.*
 
 fun Optional<Position>.getLocation(): Location {
-    return Location(this.get().line, this.get().column)
+    return Location(this.get().line.toLong(), this.get().column.toLong())
 }

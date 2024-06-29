@@ -11,8 +11,12 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSol
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver
 import pt.iscte.errorcompass.checkers.*
+import pt.iscte.errorcompass.errors.ParseError
 import pt.iscte.errorcompass.generates.ErrorGenerator
+import pt.iscte.errorcompass.model.ErrorDescription
 import pt.iscte.errorcompass.model.ResultAnalyzer
+import pt.iscte.errorcompass.support.CompilationItem
+import pt.iscte.errorcompass.support.compileNoOutput
 import java.io.File
 import java.nio.file.Paths
 
@@ -28,29 +32,37 @@ class ErrorCompass() {
      * @return Result<ResultAnalyzer> containing the analysis result.
      */
     fun run(code: String): Result<ResultAnalyzer> {
+        val generator = ErrorGenerator()
+        var errors = emptyList<ErrorDescription>()
         val typeSolver = CombinedTypeSolver()
         typeSolver.add(ReflectionTypeSolver())
         typeSolver.add(JavaParserTypeSolver(Paths.get(".")))
         val symbolSolver = JavaSymbolSolver(typeSolver)
         val parserConfiguration = ParserConfiguration()
         parserConfiguration.setSymbolResolver(symbolSolver)
+        val parser = JavaParser(parserConfiguration).parse(code.trimIndent())
+        parser.ifSuccessful {
+            val variableTypeChecker = VariableTypeChecker(it)
+            val returnTypeChecker = MethodReturnChecker()
+            val controlStructureChecker = ControlStructureChecker()
+            val stringComparisonChecker = StringComparisonChecker()
+            val uninitializedVariableChecker = UninitializedVariableChecker()
+            //Execute Checker
+            variableTypeChecker.visit(it, null)
+            returnTypeChecker.visit(it, null)
+            controlStructureChecker.visit(it, null)
+            stringComparisonChecker.visit(it, null)
+            uninitializedVariableChecker.visit(it, null)
 
-        val cu: CompilationUnit = JavaParser(parserConfiguration).parse(code.trimIndent()).result.get()
-        val variableTypeChecker = VariableTypeChecker(cu)
-        val returnTypeChecker = MethodReturnChecker()
-        val controlStructureChecker = ControlStructureChecker()
-        val stringComparisonChecker = StringComparisonChecker()
-        val uninitializedVariableChecker = UninitializedVariableChecker()
-        //Execute Checker
-        variableTypeChecker.visit(cu, null)
-        returnTypeChecker.visit(cu, null)
-        controlStructureChecker.visit(cu, null)
-        stringComparisonChecker.visit(cu, null)
-        uninitializedVariableChecker.visit(cu, null)
+            val totalIssues = variableTypeChecker.issues + returnTypeChecker.issues + controlStructureChecker.issues + stringComparisonChecker.issues + uninitializedVariableChecker.issues
 
-        val totalIssues = variableTypeChecker.issues + returnTypeChecker.issues + controlStructureChecker.issues + stringComparisonChecker.issues + uninitializedVariableChecker.issues
-        val generator = ErrorGenerator()
-        val errors = totalIssues.mapNotNull { generator.generate(it) }
+            errors = totalIssues.mapNotNull { generator.generate(it) }
+        }
+        if(!parser.isSuccessful) {
+            val diagnostics = compileNoOutput(listOf(CompilationItem(File("Main.java"), code)))
+            errors = diagnostics.mapNotNull { generator.generate(it) }
+        }
+
         return Result.success(ResultAnalyzer(errors))
     }
 
